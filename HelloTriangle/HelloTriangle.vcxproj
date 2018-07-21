@@ -21,6 +21,10 @@
   <ItemGroup>
     <ClCompile Include="Program.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Data.h" />
+    <ClInclude Include="Shaders.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{80345312-a6ee-4543-a231-e6925d02304e}</ProjectGuid>
