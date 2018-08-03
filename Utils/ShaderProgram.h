@@ -8,6 +8,8 @@ namespace utils {
 	{
 		const GLuint _id = glCreateProgram();
 
+		bool getInUse();
+
 	public:
 		enum class InputMode
 		{
@@ -32,18 +34,33 @@ namespace utils {
 		template<>
 		void setUniform<int>(const std::string& name, int value)
 		{
+			if (getInUse())
+			{
+				throw std::exception("Shader isn't in use");
+			}
+
 			glUniform1i(glGetUniformLocation(_id, name.c_str()), value);
 		}
 
 		template<>
 		void setUniform<float>(const std::string& name, float value)
 		{
+			if (getInUse())
+			{
+				throw std::exception("Shader isn't in use");
+			}
+
 			glUniform1f(glGetUniformLocation(_id, name.c_str()), value);
 		}
 
 		template<>
 		void setUniform<bool>(const std::string& name, bool value)
 		{
+			if (getInUse())
+			{
+				throw std::exception("Shader isn't in use");
+			}
+
 			glUniform1i(glGetUniformLocation(_id, name.c_str()), value);
 		}
 

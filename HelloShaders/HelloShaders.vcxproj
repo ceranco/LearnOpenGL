@@ -21,6 +21,18 @@
   <ItemGroup>
     <ClCompile Include="Program.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Data.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.vcxproj">
+      <Project>{8c6da355-e043-45d0-8e0e-520fc26977c9}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader.frag" />
+    <None Include="shader.vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{ff0d449e-2fc7-4854-8aec-05eaaa0b14cf}</ProjectGuid>

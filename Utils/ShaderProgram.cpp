@@ -1,27 +1,46 @@
 #include "ShaderProgram.h"
 #include <iostream>
+#include <fstream>
+#include <streambuf>
 
 using namespace utils;
+
+bool utils::ShaderProgram::getInUse()
+{
+	GLint id;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &id);
+
+	return id == _id;
+}
 
 ShaderProgram::ShaderProgram(const std::string& vertexShaderInput, const std::string& fragmentShaderInput, InputMode mode)
 {
 	auto getShaderSource = [](const std::string& shaderInput, InputMode mode) {
-		if (mode == InputMode::File)
+		std::string shaderSource;
+		if (mode == InputMode::Source)
 		{
-			throw std::exception("Not Implemented");
-			return "";
+			shaderSource = shaderInput;
+		}
+		else
+		{
+			std::ifstream fs{ shaderInput };
+			shaderSource = { (std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>() };
+			fs.close();
 		}
 
-		return shaderInput.c_str();
+		return shaderSource;
 	};
 	auto vertexSource = getShaderSource(vertexShaderInput, mode);
 	auto fragmentSource = getShaderSource(fragmentShaderInput, mode);
 
+	auto vertexSourceCStr = vertexSource.c_str();
+	auto fragmentSourceCStr = fragmentSource.c_str();
+
 	auto vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	auto fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	glShaderSource(vertexShader, 1, &vertexSource, nullptr);
-	glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
+	glShaderSource(vertexShader, 1, &vertexSourceCStr, nullptr);
+	glShaderSource(fragmentShader, 1, &fragmentSourceCStr, nullptr);
 
 	glCompileShader(vertexShader);
 	glCompileShader(fragmentShader);
