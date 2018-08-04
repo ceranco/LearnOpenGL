@@ -1,5 +1,9 @@
 #version 330 core
 
-inout vec4 color;
+in vec3 color;
+out vec4 vertColor;
 
-void main() {}
+void main() 
+{
+	vertColor = vec4(color, 1.0);
+}

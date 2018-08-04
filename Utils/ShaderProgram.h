@@ -34,7 +34,7 @@ namespace utils {
 		template<>
 		void setUniform<int>(const std::string& name, int value)
 		{
-			if (getInUse())
+			if (!getInUse())
 			{
 				throw std::exception("Shader isn't in use");
 			}
@@ -45,7 +45,7 @@ namespace utils {
 		template<>
 		void setUniform<float>(const std::string& name, float value)
 		{
-			if (getInUse())
+			if (!getInUse())
 			{
 				throw std::exception("Shader isn't in use");
 			}
@@ -56,7 +56,7 @@ namespace utils {
 		template<>
 		void setUniform<bool>(const std::string& name, bool value)
 		{
-			if (getInUse())
+			if (!getInUse())
 			{
 				throw std::exception("Shader isn't in use");
 			}
