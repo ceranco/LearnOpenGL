@@ -29,6 +29,9 @@
   <ItemGroup>
     <Image Include="wall.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Data.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{f5d585d5-1df4-4ec3-ac5f-f97486b844e4}</ProjectGuid>

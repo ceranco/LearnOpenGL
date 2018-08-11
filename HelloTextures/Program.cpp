@@ -2,6 +2,11 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "../Utils/ShaderProgram.h"
+#include "Data.h"
+
+using namespace utils;
+
 void frame_buffer_size_callback(GLFWwindow* window,  int width, int height) 
 {
 	glViewport(0, 0, width, height);
