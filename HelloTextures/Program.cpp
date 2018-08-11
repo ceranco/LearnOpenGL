@@ -1,13 +1,16 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image/stb_image.h>
+
 #include <iostream>
+#include <memory>
 
 #include "../Utils/ShaderProgram.h"
 #include "Data.h"
 
-
 using namespace utils;
+
+std::unique_ptr<utils::ShaderProgram> shader;
 
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -19,6 +22,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE)
 	{
 		glfwSetWindowShouldClose(window, true);
+	}
+	else
+	{
+		static float mixVariable = 0.0f;
+		
+		if (key == GLFW_KEY_UP)
+		{
+			mixVariable += 0.01;
+			shader->setUniform("mixVariable", mixVariable);
+		}
+		else if (key == GLFW_KEY_DOWN)
+		{
+			mixVariable -= 0.01;
+			shader->setUniform("mixVariable", mixVariable);
+		}
 	}
 }
 
@@ -46,7 +64,7 @@ int main(int argc, char** argv)
 		glfwTerminate();
 	}
 
-	utils::ShaderProgram shader{ "shader.vert", "shader.frag", utils::ShaderProgram::InputMode::File };
+	shader =  std::make_unique<utils::ShaderProgram>("shader.vert", "shader.frag", utils::ShaderProgram::InputMode::File);
 
 	// VAO and VBO
 	unsigned int VAO, VBO;
@@ -60,10 +78,12 @@ int main(int argc, char** argv)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(data::vertices), data::vertices, GL_STATIC_DRAW);
 
 	// load textures
-	auto loadTexture = [](unsigned int& texture, GLenum target, const char* image)
+	stbi_set_flip_vertically_on_load(true);
+	auto loadTexture = [](unsigned int& texture, GLenum num_texture, const char* image)
 	{
+		glActiveTexture(num_texture);
 		glGenTextures(1, &texture);
-		glBindTexture(target, texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
 
 		int width, height, nrChannels;
 		auto data = stbi_load(image, &width, &height, &nrChannels, 0);
@@ -74,16 +94,30 @@ int main(int argc, char** argv)
 			return false;
 		}
 
-		glTexImage2D(target, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(target);
+		auto format = nrChannels == 3 ? GL_RGB : GL_RGBA;
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
 
 		stbi_image_free(data);
 		return true;
 	};
 
-	unsigned int texture;
-	if (loadTexture(texture, GL_TEXTURE_2D, "wall.jpg"))
+	unsigned int texture1, texture2;
+	if (loadTexture(texture1, GL_TEXTURE0, "wall.jpg"))
 	{
+		glBindTexture(GL_TEXTURE_2D, texture1);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+
+	if (loadTexture(texture2, GL_TEXTURE1, "awesomeface.png"))
+	{
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -104,7 +138,10 @@ int main(int argc, char** argv)
 	glEnableVertexAttribArray(2);
 
 	// setup
-	shader.use();
+	shader->use();
+	shader->setUniform("texture1", 0);
+	shader->setUniform("texture2", 1);
+
 	glClearColor(0.2f, 0.3f, 0.2f, 1.0f);
 
 	while (!glfwWindowShouldClose(window))
@@ -116,6 +153,11 @@ int main(int argc, char** argv)
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
+
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteTextures(1, &texture1);
+	glDeleteTextures(1, &texture2);
 
 	glfwTerminate();
 }
