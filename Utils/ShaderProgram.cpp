@@ -24,6 +24,10 @@ ShaderProgram::ShaderProgram(const std::string& vertexShaderInput, const std::st
 		else
 		{
 			std::ifstream fs{ shaderInput };
+			if (!fs.good())
+			{
+				std::cout << "Cant find shader source file: \"" << shaderInput << "\"" << std::endl;
+			}
 			shaderSource = { (std::istreambuf_iterator<char>(fs)), std::istreambuf_iterator<char>() };
 			fs.close();
 		}

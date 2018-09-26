@@ -29,12 +29,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		
 		if (key == GLFW_KEY_UP)
 		{
-			mixVariable += 0.01;
+			mixVariable += 0.01f;
 			shader->setUniform("mixVariable", mixVariable);
 		}
 		else if (key == GLFW_KEY_DOWN)
 		{
-			mixVariable -= 0.01;
+			mixVariable -= 0.01f;
 			shader->setUniform("mixVariable", mixVariable);
 		}
 	}

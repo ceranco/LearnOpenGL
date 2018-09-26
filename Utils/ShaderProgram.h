@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <string>
 
 namespace utils {
@@ -62,6 +64,17 @@ namespace utils {
 			}
 
 			glUniform1i(glGetUniformLocation(_id, name.c_str()), value);
+		}
+
+		template<>
+		void setUniform<glm::mat4>(const std::string& name, glm::mat4 value)
+		{
+			if (!getInUse())
+			{
+				throw std::exception("Shader isn't in use");
+			}
+
+			glUniformMatrix4fv(glGetUniformLocation(_id, name.c_str()), 1, false, glm::value_ptr(value));
 		}
 
 		void use();
